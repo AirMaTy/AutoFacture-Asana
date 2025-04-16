@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Documentation Utilisateur – AutoFacture Asana</title>
+    <style>
+      body {
+        background-color: #f4f4f4;
+        font-family: Arial, sans-serif;
+        color: #333;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #0066cc;
+      }
+      header {
+        background: #0066cc;
+        color: #fff;
+        padding: 10px 20px;
+        text-align: center;
+      }
+      section {
+        background: #fff;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      }
+      code {
+        background: #eaeaea;
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+      footer {
+        text-align: center;
+        font-size: 0.9em;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>AutoFacture Asana</h1>
+    </header>
+
+    <section>
+      <h2>Présentation du Projet</h2>
+      <p>
+        AutoFacture Asana est une application dédiée à l’automatisation de la
+        gestion des factures dans votre espace Asana. Le logiciel se connecte à
+        votre boîte mail, extrait les factures non lues, et met à jour
+        automatiquement les tâches dans Asana pour indiquer que la facture a été
+        payée.
+      </p>
+    </section>
+
+    <section>
+      <h2>Fonctionnalités Principales</h2>
+      <ul>
+        <li>
+          <strong>Scan des e-mails :</strong> L’application analyse le dossier
+          <code>INBOX/02-STRIPE</code> pour récupérer les e-mails non lus dont
+          l’objet commence par "Votre facture ...".
+        </li>
+        <li>
+          <strong>Extraction des informations :</strong> Elle extrait le numéro
+          de facture (format FXXXXXXXX-XXXX) et le nom du client présent dans le
+          corps du mail.
+        </li>
+        <li>
+          <strong>Mise à jour Asana :</strong> Pour chaque facture extraite,
+          l’application recherche la tâche correspondante dans Asana et met à
+          jour le champ personnalisé "Paiement CG FRANCE" afin de le passer à
+          "Payé".
+        </li>
+        <li>
+          <strong>Interface graphique conviviale :</strong> Grâce à Tkinter,
+          vous pouvez visualiser les factures extraites, lancer la mise à jour
+          pour chacune d’elles ou toutes en une seule action.
+        </li>
+        <li>
+          <strong>Suivi via logs :</strong> Chaque action est enregistrée dans
+          un fichier de log pour assurer un suivi complet des mises à jour.
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Utilisation</h2>
+      <ol>
+        <li>
+          <strong>Lancement :</strong> Démarrez l’application en exécutant le
+          fichier <code>AutoFactureAsana.exe</code>.
+        </li>
+        <li>
+          <strong>Scan des e-mails :</strong> Cliquez sur le bouton "Scanner les
+          e-mails". Le programme analysera le dossier configuré et affichera les
+          factures extraites.
+        </li>
+        <li>
+          <strong>Mise à jour manuelle :</strong> Dans la fenêtre des résultats,
+          cliquez sur le bouton "Asana Payé" à côté de chaque facture pour
+          déclencher la mise à jour dans Asana.
+        </li>
+        <li>
+          <strong>Mise à jour collective :</strong> Vous pouvez également
+          utiliser le bouton "Tout mettre à jour" pour traiter l’ensemble des
+          factures affichées.
+        </li>
+        <li>
+          <strong>Logs :</strong> Les actions réalisées sont consignées dans le
+          dossier <code>log</code> qui se trouve dans le répertoire de
+          l’application.
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Configuration et Pré-requis</h2>
+      <p>
+        Avant de lancer l’application, assurez-vous que le fichier
+        <code>.env</code> est correctement renseigné avec les identifiants et le
+        token nécessaire :
+      </p>
+      <pre>
+IMAP_SERVER=imap.ionos.fr
+IMAP_PORT=993
+IMAP_USERNAME=votre@email.com
+IMAP_PASSWORD=VotreMotDePasse
+ASANA_API_TOKEN=votre_token_asana
+    </pre
+      >
+      <p>
+        Vérifiez également que votre connexion Internet fonctionne et que ni le
+        pare-feu ni l’antivirus ne bloquent l’accès aux services IMAP et Asana.
+      </p>
+    </section>
+
+    <footer>
+      <p>AutoFacture Asana – Version 1.0 | &copy; 2025</p>
+    </footer>
+  </body>
+</html>

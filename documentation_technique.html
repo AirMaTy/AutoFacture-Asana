@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Documentation Technique – AutoFacture Asana</title>
+  <style>
+    body {
+      background: #1e1e1e;
+      font-family: Consolas, monospace;
+      color: #d4d4d4;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1, h2, h3, h4 {
+      color: #569cd6;
+    }
+    header {
+      background: #333;
+      padding: 10px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    section {
+      background: #252526;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    pre, code {
+      background: #1e1e1e;
+      color: #ce9178;
+      padding: 8px;
+      border: 1px solid #333;
+      border-radius: 5px;
+      overflow: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #333;
+      color: #569cd6;
+    }
+    footer {
+      text-align: center;
+      color: #888;
+      font-size: 0.85em;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Documentation Technique – AutoFacture Asana</h1>
+  </header>
+
+  <section>
+    <h2>Contexte et Objectifs</h2>
+    <p>
+      AutoFacture Asana est une application Python conçue pour automatiser la gestion des factures dans Asana. L'application se connecte à un compte de messagerie via IMAP pour extraire des e-mails spécifiques, puis utilise l'API REST d'Asana pour mettre à jour les tâches correspondantes, notamment en modifiant le champ personnalisé « Paiement CG FRANCE » pour le passer à l'option « Payé ».
+    </p>
+  </section>
+
+  <section>
+    <h2>Architecture du Projet</h2>
+    <h3>Structure des Fichiers</h3>
+    <ul>
+      <li><strong>AutoFactureAsana.py</strong> : Script principal contenant la logique d’extraction d’e-mails, de communication avec l’API Asana, de gestion des logs et l’interface graphique.</li>
+      <li><strong>.env</strong> : Fichier de configuration contenant les variables d'environnement (IMAP, Asana API Token, etc.).</li>
+      <li><strong>docs/</strong> : Dossier contenant cette documentation ainsi que la documentation utilisateur.</li>
+      <li><strong>log/</strong> : Dossier où sont stockés les fichiers de log (<code>actions.log</code> et <code>actions_error.log</code>). Ce dossier est créé automatiquement.</li>
+    </ul>
+    <h3>Dépendances</h3>
+    <p>Les principales dépendances sont :</p>
+    <pre>
+beautifulsoup4==4.12.2
+requests==2.31.0
+python-dotenv==1.0.1
+    </pre>
+    <p>Les autres modules utilisés (imaplib, email, re, tkinter, datetime, os) font partie de la bibliothèque standard Python.</p>
+  </section>
+
+  <section>
+    <h2>Fonctionnalités et Détails des Fonctions</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Fonction</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>test_api()</code></td>
+          <td>
+            Vérifie l'accessibilité de l'API Asana en s'assurant que le projet spécifié contient le champ personnalisé "Paiement CG FRANCE" ainsi que l'option "Payé".<br>
+            Retourne un tuple (booléen, message). En cas d'échec, un message d'erreur est fourni.
+          </td>
+        </tr>
+        <tr>
+          <td><code>connect_imap()</code></td>
+          <td>
+            Établit une connexion sécurisée au serveur IMAP et authentifie l'utilisateur avec ses identifiants.<br>
+            Retourne l'objet de connexion ou <code>None</code> en cas d'erreur.
+          </td>
+        </tr>
+        <tr>
+          <td><code>fetch_email_ids(mail, folder, criteria)</code></td>
+          <td>
+            Sélectionne le dossier spécifié et renvoie la liste des identifiants d'emails qui correspondent au critère (typiquement "UNSEEN").
+          </td>
+        </tr>
+        <tr>
+          <td><code>decode_mime_words(s)</code></td>
+          <td>
+            Décode les chaînes encodées en MIME (souvent utilisées pour l'objet des emails) et retourne une chaîne décodée en UTF-8.
+          </td>
+        </tr>
+        <tr>
+          <td><code>get_email_content(msg)</code></td>
+          <td>
+            Extrait le corps de l'email en privilégiant le texte brut ou en nettoyant le HTML s'il s'agit d'un message HTML.<br>
+            Retourne le contenu textuel.
+          </td>
+        </tr>
+        <tr>
+          <td><code>get_tasks_in_project(project_gid)</code></td>
+          <td>
+            Récupère toutes les tâches d'un projet Asana en gérant la pagination (100 tâches par requête), et renvoie une liste de tâches.
+          </td>
+        </tr>
+        <tr>
+          <td><code>update_task_payment_field(task_gid, custom_field_id, enum_option_id)</code></td>
+          <td>
+            Met à jour le champ personnalisé d'une tâche (spécifié par son GID) afin de le passer à l'option "Payé" via une requête PUT vers l'API d'Asana.
+          </td>
+        </tr>
+        <tr>
+          <td><code>find_task_by_invoice(invoice_number)</code></td>
+          <td>
+            Parcourt les tâches récupérées du projet pour trouver celle qui contient le numéro de facture spécifié dans son nom.<br>
+            Utilise une expression régulière pour extraire tous les numéros de facture.
+          </td>
+        </tr>
+        <tr>
+          <td><code>update_asana_for_invoice(invoice_number)</code></td>
+          <td>
+            Combine <code>find_task_by_invoice()</code> et <code>update_task_payment_field()</code> pour mettre à jour une tâche correspondant à un numéro de facture donné.
+          </td>
+        </tr>
+        <tr>
+          <td><code>log_action(invoice, client)</code></td>
+          <td>
+            Enregistre une action réussie (mise à jour) dans le fichier de log <code>actions.log</code> avec un timestamp.
+          </td>
+        </tr>
+        <tr>
+          <td><code>log_action_error(invoice, client)</code></td>
+          <td>
+            Enregistre une erreur (échec de mise à jour) dans le fichier <code>actions_error.log</code> avec un timestamp.
+          </td>
+        </tr>
+        <tr>
+          <td><code>get_invoices_in_asana()</code></td>
+          <td>
+            Récupère et extrait la liste unique des numéros de facture présents dans les noms des tâches du projet Asana.
+          </td>
+        </tr>
+        <tr>
+          <td><code>scan_emails()</code></td>
+          <td>
+            Connecte à la boîte mail IMAP, récupère et analyse les emails non lus selon des critères spécifiques (objet commençant par "Votre facture").
+            Extrait le numéro de facture et le nom du client pour chaque email, mais ne conserve que ceux dont le numéro est déjà présent dans Asana.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Interface Graphique (Tkinter)</h2>
+    <p>
+      L'interface est conçue avec Tkinter et un thème sombre personnalisé.  
+      Principales composantes :
+    </p>
+    <ul>
+      <li>Une fenêtre principale qui permet de démarrer le scan des e-mails.</li>
+      <li>Une zone de texte pour afficher les résultats (factures extraites et informations associées).</li>
+      <li>Une fenêtre secondaire qui affiche la liste des factures extraites et propose un bouton "Asana Payé" pour mettre à jour les tâches correspondantes dans Asana.</li>
+      <li>Un bouton "Tout mettre à jour" pour déclencher la mise à jour de l'ensemble des factures affichées.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Instructions de Déploiement</h2>
+    <ol>
+      <li>
+        <strong>Création de l'Exécutable :</strong><br>
+        Utilisez PyInstaller pour générer un exécutable autonome. Par exemple, la commande suivante (adaptée pour Windows) inclut les fichiers nécessaires :
+        <pre>
+pyinstaller --onefile --windowed --add-data ".env;." --add-data "docs/documentation.html;docs" --add-data "docs/documentation_technique.html;docs" AutoFactureAsana.py
+        </pre>
+      </li>
+      <li>
+        <strong>Structure du Dossier de Distribution :</strong><br>
+        Créez un dossier final contenant : 
+        <ul>
+          <li>L’exécutable (<code>AutoFactureAsana.exe</code>),</li>
+          <li>Le fichier <code>.env</code> avec les paramètres de configuration,</li>
+          <li>Le dossier <code>docs/</code> avec les documentations utilisateur et technique,</li>
+          <li>Un dossier <code>log/</code> qui sera créé automatiquement (ou vide) pour stocker les logs.</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Test sur Machine Cible :</strong><br>
+        - Placez le dossier de distribution sur le PC cible.<br>
+        - Lancez l’exécutable et vérifiez que l’application fonctionne correctement, que les mises à jour Asana se font, et que les logs s’enregistrent dans le dossier <code>log/</code>.
+      </li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>AutoFacture Asana – Documentation Technique – Version 1.0 | &copy; 2025</p>
+  </footer>
+</body>
+</html>
