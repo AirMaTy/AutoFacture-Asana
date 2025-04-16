@@ -1,4 +1,3 @@
-```markdown
 # AutoFacture Asana
 
 **AutoFacture Asana** est une application Python qui automatise la mise à jour des statuts de facturation dans Asana. L’application scanne une boîte mail (via IMAP) pour extraire les numéros de facture et le nom du client à partir des notifications de paiement, puis met à jour les tâches correspondantes dans Asana en utilisant l’API. L’interface graphique, réalisée avec Tkinter, facilite le déclenchement des opérations et le suivi via des logs détaillés.
